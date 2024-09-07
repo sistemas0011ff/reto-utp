@@ -101,6 +101,30 @@ Este diagrama de secuencia ilustra los principales casos de uso para una aplicac
 
 ##### Alternativa 2: 
 - Si el token es válido, la API consulta el Servicio de Notas, que a su vez obtiene las notas del usuario desde la Base de Datos. Finalmente, la API responde al usuario con la lista de notas obtenida.
+### Modelo de Datos
+![Diagrama](images/MOD.png)
+
+El reto técnico tiene como objetivo implementar una API REST que gestione usuarios y notas, con funcionalidades de autenticación y autorización, utilizando Spring Boot y JWT para asegurar los endpoints. La base de datos debe permitir que los usuarios solo puedan acceder a sus propias notas, y se debe validar y manejar correctamente los datos de entrada.
+
+#### Justificación de la Relación
+
+##### **Entidad `users`:**
+- Cada usuario tiene un identificador único `id` (clave primaria), junto con otros atributos como `username`, `email` y `password`.
+
+##### **Entidad `notes`:**
+- Las notas tienen su propio identificador único `id`, junto con atributos como `title`, `content`, y `createdAt`. 
+- El campo `user_id` es una clave foránea que apunta a la clave primaria `id` en la tabla `users`.
+
+##### **Usuarios y Notas**: 
+- Cada usuario puede tener múltiples notas, y cada nota está asociada a un solo usuario. Esto se modela de forma eficiente en la base de datos utilizando una clave foránea `user_id` en la tabla `notes`.
+
+##### **Cumplimiento de Funcionalidades**: 
+- El modelo cumple con las funcionalidades básicas del reto, como la creación y el listado de notas asociadas a un usuario, y la protección de los datos a través de la autenticación y autorización con JWT.
+
+#### Relación en PlantUML:
+El símbolo adecuado en **PlantUML** para una relación uno a muchos es `|o--o{`, donde:
+- `|o` representa la **cardinalidad uno** en el lado del usuario.
+- `o{` representa la **cardinalidad muchos** en el lado de las notas.
 
 
 
