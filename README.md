@@ -118,7 +118,7 @@ Este diagrama de secuencia ilustra los principales casos de uso para una aplicac
 - Si el token es válido, la API consulta el Servicio de Notas, que a su vez obtiene las notas del usuario desde la Base de Datos. Finalmente, la API responde al usuario con la lista de notas obtenida.
 ### Modelo de Datos y Justifiación
 ![Diagrama](images/modelo.png)
-![Diagrama](images/h2.png)
+![Diagrama](images/H2.png)
 
 El reto técnico tiene como objetivo implementar una API REST que gestione usuarios y notas, con funcionalidades de autenticación y autorización, utilizando Spring Boot y JWT para asegurar los endpoints. La base de datos debe permitir que los usuarios solo puedan acceder a sus propias notas, y se debe validar y manejar correctamente los datos de entrada.
 
