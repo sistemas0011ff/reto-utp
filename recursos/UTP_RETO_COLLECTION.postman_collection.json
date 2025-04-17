@@ -96,7 +96,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n  \"title\": \"Título de la nota\",\r\n  \"content\": \"Este es el contenido de la nota\"\r\n}\r\n",
+					"raw": "{\r\n  \"score\": 8.5,\r\n  \"description\": \"Examen Parcial\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
