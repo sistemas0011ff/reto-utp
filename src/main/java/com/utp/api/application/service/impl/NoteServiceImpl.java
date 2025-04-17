@@ -14,45 +14,41 @@ import java.util.stream.Collectors;
 
 @Service
 public class NoteServiceImpl implements NoteService {
-
     private final IMediatorService mediatorService;
-
+    
     public NoteServiceImpl(IMediatorService mediatorService) {
         this.mediatorService = mediatorService;
     }
-
+    
     @Override
     public NoteResponseDTO createNote(NoteCreateRequestDTO requestDTO, String username) {
-
         CreateNoteCommand command = new CreateNoteCommand(
-                requestDTO.getTitle(),
-                requestDTO.getContent(),
+                requestDTO.getScore(),
+                requestDTO.getDescription(),
                 username
         );
-
+        
         NoteDomain noteDomain = mediatorService.dispatch(command);
-
+        
         return new NoteResponseDTO(
                 noteDomain.getId(),
-                noteDomain.getTitle(),
-                noteDomain.getContent(),
+                noteDomain.getScore(),
+                noteDomain.getDescription(),
                 noteDomain.getCreatedAt(),
                 noteDomain.getUsername()
         );
     }
-
+    
     @Override
     public List<NoteResponseDTO> listNotesByUsername(String username) {
-    
         FindNotesByUsernameQuery query = new FindNotesByUsernameQuery(username);
-
         List<NoteDomain> notes = mediatorService.dispatch(query);
-
+        
         return notes.stream()
                 .map(note -> new NoteResponseDTO(
                         note.getId(),
-                        note.getTitle(),
-                        note.getContent(),
+                        note.getScore(),
+                        note.getDescription(),
                         note.getCreatedAt(),
                         note.getUsername()))
                 .collect(Collectors.toList());

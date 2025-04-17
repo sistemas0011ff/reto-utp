@@ -9,26 +9,25 @@ import java.time.LocalDateTime;
 
 @Service
 public class CreateNoteCommandHandler implements ICommandHandler<CreateNoteCommand, NoteDomain> {
-
     private final NoteRepository noteRepository;
-
+    
     public CreateNoteCommandHandler(NoteRepository noteRepository) {
         this.noteRepository = noteRepository;
     }
-
+    
     @Override
     public NoteDomain handle(CreateNoteCommand command) { 
         NoteDomain noteDomain = new NoteDomain(
             null,  // El ID se genera automáticamente al guardar
-            command.getTitle(),
-            command.getContent(),
+            command.getScore(),
+            command.getDescription(),
             LocalDateTime.now(),
             command.getUsername()
         );
  
         return noteRepository.save(noteDomain);
     }
-
+    
     @Override
     public Class<CreateNoteCommand> getCommandType() {
         return CreateNoteCommand.class;

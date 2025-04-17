@@ -3,8 +3,23 @@
 Este documento describe la solución implementada para el reto de programación solicitado por UTP.
 
 ### Resumen del Reto
-Este reto consistió en el desarrollo de una API REST en Java utilizando el framework Spring Boot con un enfoque en arquitectura hexagonal y principios de Domain-Driven Design (DDD). Se implementó utilizando una arquitectura hexagonal basada en principios de Domain-Driven Design (DDD). La API proporciona funcionalidades de autenticación, gestión de notas, y manejo centralizado de excepciones. También se aplicaron varios patrones de diseño como el Repositorio, Comando, Fábrica, y el Patrón Mediador, asegurando un diseño modular y escalable.
+Este reto consistió en el desarrollo de una API REST en Java utilizando el framework Spring Boot con un enfoque en arquitectura hexagonal y principios de Domain-Driven Design (DDD). Se implementó una API para administrar un sistema de calificaciones numéricas con funcionalidades de autenticación, gestión de calificaciones, y manejo centralizado de excepciones. También se aplicaron varios patrones de diseño como el Repositorio, Comando, Fábrica, y el Patrón Mediador, asegurando un diseño modular y escalable.
 
+### Funcionalidades Básicas
+1. **Usuario y Autenticación**: Implementación de un método de autenticación básica para restringir el acceso a la API.
+2. **Endpoints para Calificaciones**: Creación de endpoints para administrar calificaciones numéricas (crear y listar), almacenándolas en una base de datos.
+
+### Funcionalidades Adicionales (Opcionales)
+1. **Serialización y Validación**: Validación de los datos recibidos por POST, visualización de errores al usuario y serialización de la lista de objetos a formato JSON.
+2. **Autorización**: Asociación de cada calificación con un usuario específico, permitiendo que cada usuario solo pueda ver sus propias calificaciones.
+3. **JWT**: Implementación de autenticación mediante JSON Web Tokens.
+
+
+### Tecnologías Implementadas
+* **Framework**: Spring Boot
+* **Base de datos**: H2 (en memoria)
+* **Validaciones**: Jakarta Bean Validation
+* **Documentación API**: Swagger/OpenAPI
 
 ### Diagrama de arquitectura
 ![Diagrama](images/DIAGRAMA_ARQ.png)
@@ -101,8 +116,8 @@ Este diagrama de secuencia ilustra los principales casos de uso para una aplicac
 
 ##### Alternativa 2: 
 - Si el token es válido, la API consulta el Servicio de Notas, que a su vez obtiene las notas del usuario desde la Base de Datos. Finalmente, la API responde al usuario con la lista de notas obtenida.
-### Modelo de Datos
-![Diagrama](images/MOD.png)
+### Modelo de Datos y Justifiación
+![Diagrama](images/modelo.png)
 
 El reto técnico tiene como objetivo implementar una API REST que gestione usuarios y notas, con funcionalidades de autenticación y autorización, utilizando Spring Boot y JWT para asegurar los endpoints. La base de datos debe permitir que los usuarios solo puedan acceder a sus propias notas, y se debe validar y manejar correctamente los datos de entrada.
 
@@ -124,7 +139,7 @@ El reto técnico tiene como objetivo implementar una API REST que gestione usuar
 #### Relación en PlantUML:
 El símbolo adecuado en **PlantUML** para una relación uno a muchos es `|o--o{`, donde:
 - `|o` representa la **cardinalidad uno** en el lado del usuario.
-- `o{` representa la **cardinalidad muchos** en el lado de las notas.
+- `o` representa la **cardinalidad muchos** en el lado de las notas.
 
 
 

@@ -17,47 +17,49 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 public class CreateNoteCommandHandlerTest {
-
+    
     @Mock
     private NoteRepository noteRepository;
-
+    
     @InjectMocks
     private CreateNoteCommandHandler createNoteCommandHandler;
-
+    
     @BeforeEach
     public void setUp() {
         MockitoAnnotations.openMocks(this);
     }
-
+    
     @Test
     public void testHandle_Success() {
-        // Configurar el comando de prueba
-        CreateNoteCommand command = new CreateNoteCommand("Test Title", "Test Content", "testUser");
-
+        // Configurar el comando de prueba con la nueva estructura (score en lugar de title/content)
+        Double testScore = 18.5;
+        String testDescription = "Examen final";
+        CreateNoteCommand command = new CreateNoteCommand(testScore, testDescription, "testUser");
+        
         // Configurar la respuesta esperada del repositorio
-        NoteDomain savedNote = new NoteDomain(1L, "Test Title", "Test Content", LocalDateTime.now(), "testUser");
+        NoteDomain savedNote = new NoteDomain(1L, testScore, testDescription, LocalDateTime.now(), "testUser");
         when(noteRepository.save(any(NoteDomain.class))).thenReturn(savedNote);
-
+        
         // Ejecutar el método handle
         NoteDomain result = createNoteCommandHandler.handle(command);
-
+        
         // Verificar que el repositorio fue llamado con el objeto correcto
         ArgumentCaptor<NoteDomain> noteCaptor = ArgumentCaptor.forClass(NoteDomain.class);
         verify(noteRepository).save(noteCaptor.capture());
-
-        // Verificar que los valores son correctos
+        
+        // Verificar que los valores son correctos con la nueva estructura
         NoteDomain capturedNote = noteCaptor.getValue();
-        assertEquals("Test Title", capturedNote.getTitle());
-        assertEquals("Test Content", capturedNote.getContent());
+        assertEquals(testScore, capturedNote.getScore());
+        assertEquals(testDescription, capturedNote.getDescription());
         assertEquals("testUser", capturedNote.getUsername());
-
+        
         assertNotNull(result);
         assertEquals(1L, result.getId());
-        assertEquals("Test Title", result.getTitle());
-        assertEquals("Test Content", result.getContent());
+        assertEquals(testScore, result.getScore());
+        assertEquals(testDescription, result.getDescription());
         assertEquals("testUser", result.getUsername());
     }
-
+    
     @Test
     public void testHandle_NullCommand() {
         // Verificar que lanzar una excepción si el comando es nulo

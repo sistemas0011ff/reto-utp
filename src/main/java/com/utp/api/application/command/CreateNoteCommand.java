@@ -3,22 +3,22 @@ package com.utp.api.application.command;
 import com.utp.api.application.shared.ICommand;
 
 public class CreateNoteCommand implements ICommand {
-    private final String title;
-    private final String content;
+    private final Double score;
+    private final String description;
     private final String username;
 
-    public CreateNoteCommand(String title, String content, String username) {
-        this.title = title;
-        this.content = content;
+    public CreateNoteCommand(Double score, String description, String username) {
+        this.score = score;
+        this.description = description;
         this.username = username;
     }
 
-    public String getTitle() {
-        return title;
+    public Double getScore() {
+        return score;
     }
 
-    public String getContent() {
-        return content;
+    public String getDescription() {
+        return description;
     }
 
     public String getUsername() {

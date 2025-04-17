@@ -4,58 +4,59 @@ import java.time.LocalDateTime;
 
 public class NoteResponseDTO {
     private Long id;
-    private String title;
-    private String content;
+    private Double score;
+    private String description;
     private LocalDateTime createdAt;
     private String username;
-
-    public NoteResponseDTO() {}
     
-    public NoteResponseDTO(Long id, String title, String content, LocalDateTime createdAt, String username) {
+    public NoteResponseDTO() {
+    }
+    
+    public NoteResponseDTO(Long id, Double score, String description, LocalDateTime createdAt, String username) {
         this.id = id;
-        this.title = title;
-        this.content = content;
+        this.score = score;
+        this.description = description;
         this.createdAt = createdAt;
         this.username = username;
     }
-
+    
     // Getters y Setters
     public Long getId() {
         return id;
     }
-
+    
     public void setId(Long id) {
         this.id = id;
     }
-
-    public String getTitle() {
-        return title;
+    
+    public Double getScore() {
+        return score;
     }
-
-    public void setTitle(String title) {
-        this.title = title;
+    
+    public void setScore(Double score) {
+        this.score = score;
     }
-
-    public String getContent() {
-        return content;
+    
+    public String getDescription() {
+        return description;
     }
-
-    public void setContent(String content) {
-        this.content = content;
+    
+    public void setDescription(String description) {
+        this.description = description;
     }
-
+    
     public LocalDateTime getCreatedAt() {
         return createdAt;
     }
-
+    
     public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
     }
-
+    
     public String getUsername() {
         return username;
     }
-
+    
     public void setUsername(String username) {
         this.username = username;
     }

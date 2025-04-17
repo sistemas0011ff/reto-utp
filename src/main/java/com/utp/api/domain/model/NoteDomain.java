@@ -4,15 +4,18 @@ import java.time.LocalDateTime;
 
 public class NoteDomain {
     private Long id;
-    private String title;
-    private String content;
+    private Double score;
+    private String description;
     private LocalDateTime createdAt;
-    private String username;  
+    private String username;
+    
+    public NoteDomain() {
+    }
 
-    public NoteDomain(Long id, String title, String content, LocalDateTime createdAt, String username) {
+    public NoteDomain(Long id, Double score, String description, LocalDateTime createdAt, String username) {
         this.id = id;
-        this.title = title;
-        this.content = content;
+        this.score = score;
+        this.description = description;
         this.createdAt = createdAt;
         this.username = username;
     }
@@ -26,20 +29,20 @@ public class NoteDomain {
         this.id = id;
     }
 
-    public String getTitle() {
-        return title;
+    public Double getScore() {
+        return score;
     }
 
-    public void setTitle(String title) {
-        this.title = title;
+    public void setScore(Double score) {
+        this.score = score;
     }
 
-    public String getContent() {
-        return content;
+    public String getDescription() {
+        return description;
     }
 
-    public void setContent(String content) {
-        this.content = content;
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     public LocalDateTime getCreatedAt() {

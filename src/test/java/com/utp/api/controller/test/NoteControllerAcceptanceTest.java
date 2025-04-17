@@ -20,7 +20,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user; // <- Import necesario
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -37,13 +37,13 @@ public class NoteControllerAcceptanceTest {
 
     @Test
     public void testCreateNote_Success() throws Exception {
-        // DTO para crear nota
+        // DTO para crear nota con calificación numérica
         NoteCreateRequestDTO noteRequest = new NoteCreateRequestDTO();
-        noteRequest.setTitle("Nota de ejemplo");
-        noteRequest.setContent("Contenido de la nota");
+        noteRequest.setScore(18.5);
+        noteRequest.setDescription("Examen final de matemáticas");
 
         // Simular comportamiento del servicio
-        NoteResponseDTO response = new NoteResponseDTO(1L, "Nota de ejemplo", "Contenido de la nota", null, "username");
+        NoteResponseDTO response = new NoteResponseDTO(1L, 18.5, "Examen final de matemáticas", null, "username");
         when(noteService.createNote(any(NoteCreateRequestDTO.class), any(String.class))).thenReturn(response);
 
         // Realizar el test con usuario autenticado
@@ -56,11 +56,11 @@ public class NoteControllerAcceptanceTest {
     }
 
     @Test
-    public void testCreateNote_TitleIsString() throws Exception {
-        // DTO con "string" como título
+    public void testCreateNote_ScoreOutOfRange() throws Exception {
+        // DTO con calificación fuera de rango
         NoteCreateRequestDTO noteRequest = new NoteCreateRequestDTO();
-        noteRequest.setTitle("string");
-        noteRequest.setContent("Contenido válido");
+        noteRequest.setScore(25.0); // Fuera del rango válido (0-20)
+        noteRequest.setDescription("Descripción válida");
 
         // Realizar el test con usuario autenticado
         mockMvc.perform(post("/api/notes")
@@ -72,11 +72,11 @@ public class NoteControllerAcceptanceTest {
     }
 
     @Test
-    public void testCreateNote_ContentTooShort() throws Exception {
-        // DTO con contenido demasiado corto
+    public void testCreateNote_NegativeScore() throws Exception {
+        // DTO con calificación negativa
         NoteCreateRequestDTO noteRequest = new NoteCreateRequestDTO();
-        noteRequest.setTitle("Título válido");
-        noteRequest.setContent("a");
+        noteRequest.setScore(-5.0); // Calificación negativa no permitida
+        noteRequest.setDescription("Descripción válida");
 
         // Realizar el test con usuario autenticado
         mockMvc.perform(post("/api/notes")
@@ -90,7 +90,7 @@ public class NoteControllerAcceptanceTest {
     @Test
     public void testListNotes_Success() throws Exception {
         // Simular comportamiento del servicio
-        NoteResponseDTO response = new NoteResponseDTO(1L, "Nota de ejemplo", "Contenido de la nota", null, "username");
+        NoteResponseDTO response = new NoteResponseDTO(1L, 17.0, "Examen parcial", null, "username");
         when(noteService.listNotesByUsername("username")).thenReturn(Collections.singletonList(response));
 
         // Realizar el test con usuario autenticado

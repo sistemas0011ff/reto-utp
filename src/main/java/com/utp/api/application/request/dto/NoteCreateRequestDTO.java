@@ -1,35 +1,33 @@
 package com.utp.api.application.request.dto;
 
-import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.DecimalMax;
+import jakarta.validation.constraints.DecimalMin;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-import com.utp.api.application.validation.NotDefaultString;
 
 public class NoteCreateRequestDTO {
-
-    @NotBlank(message = "El título es obligatorio")
-    @Size(min = 3, max = 100, message = "El título debe tener entre 3 y 100 caracteres")
-    @NotDefaultString(message = "El título no puede ser 'string'")
-    private String title;
-
-    @NotBlank(message = "El contenido es obligatorio")
-    @Size(min = 3, max = 500, message = "El contenido debe tener entre 3 y 500 caracteres")
-    @NotDefaultString(message = "El contenido no puede ser 'string'")
-    private String content;
-
+    @NotNull(message = "La calificación es obligatoria")
+    @DecimalMin(value = "0.0", inclusive = true, message = "La calificación no puede ser menor a 0")
+    @DecimalMax(value = "20.0", inclusive = true, message = "La calificación no puede ser mayor a 20")
+    private Double score;
+    
+    @Size(max = 500, message = "La descripción debe tener máximo 500 caracteres")
+    private String description;
+    
     // Getters y Setters
-    public String getTitle() {
-        return title;
+    public Double getScore() {
+        return score;
     }
-
-    public void setTitle(String title) {
-        this.title = title;
+    
+    public void setScore(Double score) {
+        this.score = score;
     }
-
-    public String getContent() {
-        return content;
+    
+    public String getDescription() {
+        return description;
     }
-
-    public void setContent(String content) {
-        this.content = content;
+    
+    public void setDescription(String description) {
+        this.description = description;
     }
 }

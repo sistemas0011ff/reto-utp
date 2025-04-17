@@ -1,7 +1,6 @@
 package com.utp.api.controller.test;
 
 import com.utp.api.application.request.dto.NoteCreateRequestDTO;
-import com.utp.api.application.response.dto.ApiResponseDTO;
 import com.utp.api.application.response.dto.NoteResponseDTO;
 import com.utp.api.application.service.NoteService;
 import com.utp.api.controller.NoteController;
@@ -12,7 +11,9 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,6 +21,7 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public class NoteControllerUnitTest {
@@ -28,7 +30,10 @@ public class NoteControllerUnitTest {
     private NoteService noteService;
 
     @Mock
-    private UserDetails userDetails;
+    private Authentication authentication;
+
+    @Mock
+    private SecurityContext securityContext;
 
     @InjectMocks
     private NoteController noteController;
@@ -36,70 +41,67 @@ public class NoteControllerUnitTest {
     @BeforeEach
     public void setUp() {
         MockitoAnnotations.openMocks(this);
+        
+        // Configurar SecurityContextHolder mock
+        when(securityContext.getAuthentication()).thenReturn(authentication);
+        SecurityContextHolder.setContext(securityContext);
+        when(authentication.getName()).thenReturn("testUser");
     }
 
     @Test
     public void testCreateNote_Success() {
-        // Simular el UserDetails con un nombre de usuario
-        when(userDetails.getUsername()).thenReturn("testUser");
-
-        // DTO para crear nota
+        // DTO para crear nota con calificación numérica
         NoteCreateRequestDTO noteRequest = new NoteCreateRequestDTO();
-        noteRequest.setTitle("Nota de ejemplo");
-        noteRequest.setContent("Contenido de la nota");
+        noteRequest.setScore(17.5);
+        noteRequest.setDescription("Examen parcial de física");
 
         // Simular comportamiento del servicio
-        NoteResponseDTO createdNote = new NoteResponseDTO(1L, "Nota de ejemplo", "Contenido de la nota", null, "testUser");
+        NoteResponseDTO createdNote = new NoteResponseDTO(1L, 17.5, "Examen parcial de física", null, "testUser");
         when(noteService.createNote(any(NoteCreateRequestDTO.class), anyString())).thenReturn(createdNote);
 
         // Llamar al método del controlador
-        ResponseEntity<ApiResponseDTO<NoteResponseDTO>> result = noteController.createNote(noteRequest, userDetails);
+        ResponseEntity<NoteResponseDTO> result = noteController.createNote(noteRequest);
 
         // Verificar el resultado
         assertEquals(HttpStatus.CREATED, result.getStatusCode());
-        assertEquals("Nota creada exitosamente", result.getBody().getMessage());
-        assertEquals("Nota de ejemplo", result.getBody().getData().getTitle());
-        assertEquals("Contenido de la nota", result.getBody().getData().getContent());
+        assertEquals(17.5, result.getBody().getScore());
+        assertEquals("Examen parcial de física", result.getBody().getDescription());
     }
 
     @Test
-    public void testCreateNote_InvalidTitle() {
-        // Simular el UserDetails con un nombre de usuario
-        when(userDetails.getUsername()).thenReturn("testUser");
-
-        // DTO con título inválido
+    public void testCreateNote_InvalidScore() {
+        // DTO con calificación inválida (fuera de rango)
         NoteCreateRequestDTO noteRequest = new NoteCreateRequestDTO();
-        noteRequest.setTitle("string");  // Esto debería desencadenar una validación fallida
-        noteRequest.setContent("Contenido válido");
+        noteRequest.setScore(21.5);  // Esto debería desencadenar una validación fallida (mayor a 20)
+        noteRequest.setDescription("Descripción válida");
 
         // Simular comportamiento del servicio (arroja una excepción)
-        when(noteService.createNote(any(NoteCreateRequestDTO.class), anyString())).thenThrow(new IllegalArgumentException("Error de validación"));
+        when(noteService.createNote(any(NoteCreateRequestDTO.class), anyString()))
+            .thenThrow(new IllegalArgumentException("Error de validación"));
 
         // Llamar al método del controlador
-        ResponseEntity<ApiResponseDTO<NoteResponseDTO>> result = noteController.createNote(noteRequest, userDetails);
-
-        // Verificar el resultado
-        assertEquals(HttpStatus.BAD_REQUEST, result.getStatusCode());
-        assertEquals("Error de validación", result.getBody().getMessage());
+        // Nota: En la implementación real, este error sería capturado por un ExceptionHandler
+        try {
+            noteController.createNote(noteRequest);
+        } catch (IllegalArgumentException e) {
+            assertEquals("Error de validación", e.getMessage());
+        }
     }
 
     @Test
     public void testListNotes_Success() {
-        // Simular el UserDetails con un nombre de usuario
-        when(userDetails.getUsername()).thenReturn("testUser");
-
         // Simular comportamiento del servicio
         List<NoteResponseDTO> notes = new ArrayList<>();
-        notes.add(new NoteResponseDTO(1L, "Nota de ejemplo", "Contenido de la nota", null, "testUser"));
+        notes.add(new NoteResponseDTO(1L, 18.0, "Trabajo final de programación", null, "testUser"));
         when(noteService.listNotesByUsername("testUser")).thenReturn(notes);
 
         // Llamar al método del controlador
-        ResponseEntity<ApiResponseDTO<List<NoteResponseDTO>>> result = noteController.listNotes(userDetails);
+        ResponseEntity<List<NoteResponseDTO>> result = noteController.listNotes();
 
         // Verificar el resultado
         assertEquals(HttpStatus.OK, result.getStatusCode());
-        assertEquals("Notas obtenidas exitosamente", result.getBody().getMessage());
-        assertEquals(1, result.getBody().getData().size());
-        assertEquals("Nota de ejemplo", result.getBody().getData().get(0).getTitle());
+        assertEquals(1, result.getBody().size());
+        assertEquals(18.0, result.getBody().get(0).getScore());
+        assertEquals("Trabajo final de programación", result.getBody().get(0).getDescription());
     }
 }

@@ -23,74 +23,72 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
 public class NoteRepositoryImplTest {
-
+    
     @Mock
     private JpaNoteRepository jpaNoteRepository;
-
+    
     @Mock
     private JpaUserRepository jpaUserRepository;
-
+    
     @InjectMocks
     private NoteRepositoryImpl noteRepositoryImpl;
-
+    
     @BeforeEach
     public void setUp() {
         MockitoAnnotations.openMocks(this);
     }
-
+    
     @Test
     public void testFindByUsername_Success() {
         // Datos de prueba
         UserEntity userEntity = new UserEntity();
         userEntity.setUsername("testUser");
-
-        NoteEntity noteEntity = new NoteEntity("Test Title", "Test Content", LocalDateTime.now(), userEntity);
+        NoteEntity noteEntity = new NoteEntity(17.5, "Examen parcial", LocalDateTime.now(), userEntity);
         when(jpaNoteRepository.findByUser_Username("testUser")).thenReturn(Collections.singletonList(noteEntity));
-
+        
         // Llamada al método
         List<NoteDomain> result = noteRepositoryImpl.findByUsername("testUser");
-
+        
         // Verificaciones
         assertEquals(1, result.size());
-        assertEquals("Test Title", result.get(0).getTitle());
+        assertEquals(17.5, result.get(0).getScore());
+        assertEquals("Examen parcial", result.get(0).getDescription());
         assertEquals("testUser", result.get(0).getUsername());
-
         verify(jpaNoteRepository, times(1)).findByUser_Username("testUser");
     }
-
+    
     @Test
     public void testSave_Success() {
         // Datos de prueba
         UserEntity userEntity = new UserEntity();
         userEntity.setUsername("testUser");
-
-        NoteDomain noteDomain = new NoteDomain(null, "Test Title", "Test Content", LocalDateTime.now(), "testUser");
-        NoteEntity noteEntity = NoteMapper.toPersistence(noteDomain, userEntity);
-
+        NoteDomain noteDomain = new NoteDomain(null, 18.0, "Proyecto final", LocalDateTime.now(), "testUser");
+        
+        // Simulamos el comportamiento de NoteMapper.toPersistence que ahora no podemos llamar directamente en el test
+        NoteEntity noteEntity = new NoteEntity(18.0, "Proyecto final", noteDomain.getCreatedAt(), userEntity);
+        
         when(jpaUserRepository.findByUsername("testUser")).thenReturn(Optional.of(userEntity));
         when(jpaNoteRepository.save(any(NoteEntity.class))).thenReturn(noteEntity);
-
+        
         // Llamada al método
         NoteDomain result = noteRepositoryImpl.save(noteDomain);
-
+        
         // Verificaciones
-        assertEquals("Test Title", result.getTitle());
+        assertEquals(18.0, result.getScore());
+        assertEquals("Proyecto final", result.getDescription());
         assertEquals("testUser", result.getUsername());
-
         verify(jpaUserRepository, times(1)).findByUsername("testUser");
         verify(jpaNoteRepository, times(1)).save(any(NoteEntity.class));
     }
-
+    
     @Test
     public void testSave_UserNotFound() {
         // Datos de prueba
-        NoteDomain noteDomain = new NoteDomain(null, "Test Title", "Test Content", LocalDateTime.now(), "unknownUser");
-
+        NoteDomain noteDomain = new NoteDomain(null, 16.5, "Práctica de laboratorio", LocalDateTime.now(), "unknownUser");
         when(jpaUserRepository.findByUsername("unknownUser")).thenReturn(Optional.empty());
-
+        
         // Verificación de excepción
         assertThrows(IllegalArgumentException.class, () -> noteRepositoryImpl.save(noteDomain), "Usuario no encontrado");
-
         verify(jpaUserRepository, times(1)).findByUsername("unknownUser");
         verify(jpaNoteRepository, times(0)).save(any(NoteEntity.class));
     }
